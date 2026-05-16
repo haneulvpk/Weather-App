@@ -9,9 +9,9 @@ function firstRainTime(hourly = []) {
 
 export function getRainAlert(hourly) {
   if (!hasRainInNextHours(hourly)) {
-    return 'No rain soon. Safe to go outside ✨';
+    return 'Sắp tới chưa mưa. Ra ngoài thoải mái ✨';
   }
 
   const rainTime = firstRainTime(hourly);
-  return `Rain starts around ${rainTime}. Bring an umbrella ☔`;
+  return `Tầm ${rainTime} sẽ có mưa. Nhớ mang ô ☔`;
 }

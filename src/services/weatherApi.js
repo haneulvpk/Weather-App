@@ -2,25 +2,25 @@
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast';
 
 const WEATHER_CODE_TO_TEXT = {
-  0: 'Clear',
-  1: 'Mainly clear',
-  2: 'Partly cloudy',
-  3: 'Cloudy',
-  45: 'Foggy',
-  48: 'Foggy',
-  51: 'Light drizzle',
-  53: 'Drizzle',
-  55: 'Heavy drizzle',
-  61: 'Light rain',
-  63: 'Rainy',
-  65: 'Heavy rain',
-  71: 'Light snow',
-  73: 'Snowy',
-  75: 'Heavy snow',
-  80: 'Rain showers',
-  81: 'Rain showers',
-  82: 'Heavy showers',
-  95: 'Thunderstorm',
+  0: 'Trời quang',
+  1: 'Ít mây',
+  2: 'Mây rải rác',
+  3: 'Nhiều mây',
+  45: 'Sương mù',
+  48: 'Sương mù',
+  51: 'Mưa phùn nhẹ',
+  53: 'Mưa phùn',
+  55: 'Mưa phùn nặng hạt',
+  61: 'Mưa nhẹ',
+  63: 'Trời mưa',
+  65: 'Mưa to',
+  71: 'Tuyết nhẹ',
+  73: 'Có tuyết',
+  75: 'Tuyết dày',
+  80: 'Mưa rào',
+  81: 'Mưa rào',
+  82: 'Mưa rào lớn',
+  95: 'Dông',
 };
 
 function codeToEmoji(code) {
@@ -33,10 +33,8 @@ function codeToEmoji(code) {
   return '☁️';
 }
 
-function to12HourLabel(hour24) {
-  const suffix = hour24 >= 12 ? 'PM' : 'AM';
-  const hour = hour24 % 12 || 12;
-  return `${hour}${suffix}`;
+function toHourLabel(hour24) {
+  return `${hour24}h`;
 }
 
 async function fetchJson(url, errorMessage) {
@@ -55,11 +53,11 @@ async function geocodeCity(city) {
     format: 'json',
   });
 
-  const data = await fetchJson(`${GEO_URL}?${params}`, 'Failed to find city');
+  const data = await fetchJson(`${GEO_URL}?${params}`, 'Không tìm thấy thành phố');
   const place = data.results?.[0];
 
   if (!place) {
-    throw new Error('City not found');
+    throw new Error('Không tìm thấy thành phố');
   }
 
   return {
@@ -71,7 +69,7 @@ async function geocodeCity(city) {
 
 export async function getWeatherByCity(city) {
   if (!city?.trim()) {
-    throw new Error('City name is required');
+    throw new Error('Vui lòng nhập tên thành phố');
   }
 
   const location = await geocodeCity(city);
@@ -84,7 +82,7 @@ export async function getWeatherByCity(city) {
     timezone: 'auto',
   });
 
-  const data = await fetchJson(`${FORECAST_URL}?${params}`, 'Failed to fetch weather data');
+  const data = await fetchJson(`${FORECAST_URL}?${params}`, 'Không tải được dữ liệu thời tiết');
   const current = data.current;
 
   const currentHour = Number(data.current.time.slice(11, 13));
@@ -97,7 +95,7 @@ export async function getWeatherByCity(city) {
     const code = data.hourly.weather_code[safeStartIndex + idx];
 
     return {
-      time: to12HourLabel(hourPart),
+      time: toHourLabel(hourPart),
       icon: codeToEmoji(code),
       temperature: `${Math.round(temp)}°`,
     };
@@ -106,7 +104,7 @@ export async function getWeatherByCity(city) {
   return {
     city: location.name,
     temperature: Math.round(current.temperature_2m),
-    description: WEATHER_CODE_TO_TEXT[current.weather_code] || 'Cloudy',
+    description: WEATHER_CODE_TO_TEXT[current.weather_code] || 'Nhiều mây',
     icon: codeToEmoji(current.weather_code),
     humidity: Math.round(current.relative_humidity_2m),
     windSpeed: Math.round(current.wind_speed_10m),

@@ -16,7 +16,7 @@ import { getTouchGrassScore } from './utils/touchGrassScore';
 import { getBackgroundTheme } from './utils/backgroundTheme';
 
 function App() {
-  const [searchValue, setSearchValue] = useState('Hanoi');
+  const [searchValue, setSearchValue] = useState('Hà Nội');
   const [weather, setWeather] = useState(mockWeather);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -29,7 +29,7 @@ function App() {
       const data = await getWeatherByCity(city);
       setWeather(data);
     } catch (err) {
-      setError(err.message || 'Could not load weather');
+      setError(err.message || 'Không tải được dữ liệu thời tiết');
     } finally {
       setIsLoading(false);
     }
@@ -37,7 +37,7 @@ function App() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      loadWeather('Hanoi');
+      loadWeather('Hà Nội');
     }, 0);
 
     return () => clearTimeout(timer);
@@ -60,7 +60,7 @@ function App() {
       <main className="app-shell">
         <header className="app-header fade-in-card">
           <h1>SkyMood</h1>
-          <p>Weather for humans</p>
+          <p>Thời tiết cho con người</p>
         </header>
 
         <SearchBar
@@ -69,7 +69,7 @@ function App() {
           onSearch={handleSearch}
         />
 
-        {isLoading && <p className="status-message">Loading weather...</p>}
+        {isLoading && <p className="status-message">Đang tải thời tiết...</p>}
         {error && <p className="status-message error">{error}</p>}
 
         {!isLoading && (
@@ -77,9 +77,9 @@ function App() {
             <WeatherCard weather={weather} mood={weatherMood} />
 
             <section className="stats-grid">
-              <StatCard label="Humidity" value={`${weather.humidity}%`} />
-              <StatCard label="Wind" value={`${weather.windSpeed} km/h`} />
-              <StatCard label="Feels Like" value={`${weather.feelsLike}°`} />
+              <StatCard label="Độ ẩm" value={`${weather.humidity}%`} />
+              <StatCard label="Gió" value={`${weather.windSpeed} km/h`} />
+              <StatCard label="Cảm giác như" value={`${weather.feelsLike}°`} />
             </section>
 
             <RainAlert message={rainAlert} />

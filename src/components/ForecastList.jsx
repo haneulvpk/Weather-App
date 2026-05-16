@@ -1,7 +1,7 @@
 ﻿function ForecastList({ hourly }) {
   return (
     <section className="forecast-section">
-      <h3 className="section-title">Hourly forecast</h3>
+      <h3 className="section-title">Dự báo theo giờ</h3>
       <div className="forecast-scroll" role="list">
         {hourly.map((item) => (
           <article key={item.time} className="glass-card forecast-card" role="listitem">

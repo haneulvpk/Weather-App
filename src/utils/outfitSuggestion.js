@@ -4,20 +4,20 @@
 
 export function getOutfitSuggestion(weather) {
   if (isRainy(weather.hourly, weather)) {
-    return 'Bring an umbrella and wear water-friendly shoes.';
+    return 'Mang ô và đi giày chống nước nhé.';
   }
 
   if (weather.temperature >= 32) {
-    return 'Oversized tee, shorts, and sunscreen.';
+    return 'Áo thun rộng, quần short, thêm kem chống nắng.';
   }
 
   if (weather.temperature >= 27) {
-    return 'T-shirt, light pants, and sneakers.';
+    return 'Áo thun, quần nhẹ, giày sneaker là ổn.';
   }
 
   if (weather.temperature <= 20) {
-    return 'Hoodie or light jacket recommended.';
+    return 'Nên có hoodie hoặc áo khoác mỏng.';
   }
 
-  return 'Light layers are enough for today.';
+  return 'Mặc layer nhẹ là vừa đẹp.';
 }

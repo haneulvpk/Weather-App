@@ -2,10 +2,10 @@
   const description = weather.description.toLowerCase();
   const isRainy = description.includes('rain') || weather.icon.includes('🌧');
 
-  if (isRainy) return 'Cozy rain mode activated.';
-  if (weather.temperature >= 33 || weather.feelsLike >= 35) return 'Outside feels like an air fryer.';
-  if (description.includes('cloud')) return 'Perfect weather for coffee and slow coding.';
-  if (description.includes('clear') || weather.icon.includes('☀️')) return 'Main character walk weather.';
+  if (isRainy) return 'Bật chế độ mưa chill.';
+  if (weather.temperature >= 33 || weather.feelsLike >= 35) return 'Ra ngoài như ngồi cạnh nồi chiên không dầu.';
+  if (description.includes('cloud')) return 'Trời này hợp cà phê và code chậm rãi.';
+  if (description.includes('clear') || weather.icon.includes('☀️')) return 'Thời tiết chuẩn đi dạo main character.';
 
-  return 'Soft weather, soft vibes.';
+  return 'Thời tiết dịu, tâm trạng cũng dịu.';
 }

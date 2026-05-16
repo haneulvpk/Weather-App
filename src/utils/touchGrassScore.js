@@ -22,19 +22,19 @@ export function getTouchGrassScore(weather) {
   if (finalScore >= 8) {
     return {
       score: finalScore,
-      summary: 'Good day to go outside before it rains.',
+      summary: 'Đi ra ngoài hôm nay khá lý tưởng đó.',
     };
   }
 
   if (finalScore >= 5) {
     return {
       score: finalScore,
-      summary: 'Okay for a short walk, pick your timing.',
+      summary: 'Đi dạo ngắn thì ổn, chọn giờ cho khéo.',
     };
   }
 
   return {
     score: finalScore,
-    summary: 'Indoor mode is probably the better move today.',
+    summary: 'Hôm nay mode ở trong nhà sẽ hợp hơn.',
   };
 }

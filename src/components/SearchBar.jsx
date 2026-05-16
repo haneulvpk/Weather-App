@@ -9,11 +9,11 @@
       <input
         className="search-input"
         type="text"
-        placeholder="Search city..."
+        placeholder="Tìm thành phố..."
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
-      <button className="search-button" type="submit">Search</button>
+      <button className="search-button" type="submit">Tìm</button>
     </form>
   );
 }
