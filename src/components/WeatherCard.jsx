@@ -4,7 +4,7 @@ import React from 'react';
  * WeatherCard Component
  * Displays weather information in a card format
  */
-function WeatherCard({ weather }) {
+function WeatherCard({ weather, forecast }) {
   if (!weather) {
     return <div className="weather-card empty">No weather data available</div>;
   }
@@ -44,6 +44,23 @@ function WeatherCard({ weather }) {
           <span className="detail-value">{windSpeed} m/s</span>
         </div>
       </div>
+
+      {forecast.length > 0 && (
+        <div className="forecast">
+          <h3 className="forecast-title">5-day forecast</h3>
+          <div className="forecast-list">
+            {forecast.map((day) => (
+              <div key={day.date} className="forecast-item">
+                <span className="forecast-date">{day.date}</span>
+                <span className="forecast-desc">{day.description}</span>
+                <span className="forecast-temp">
+                  {Math.round(day.tempMin)}° / {Math.round(day.tempMax)}°
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
