@@ -1,5 +1,3 @@
-import React from 'react';
-
 /**
  * WeatherCard Component
  * Displays weather information in a card format
@@ -30,7 +28,7 @@ function WeatherCard({ weather, forecast }) {
       <div className="weather-main">
         <div className="temperature">
           <span className="temp-value">{Math.round(temperature)}</span>
-          <span className="temp-unit">°C</span>
+          <span className="temp-unit">&deg;C</span>
         </div>
       </div>
 
@@ -54,7 +52,7 @@ function WeatherCard({ weather, forecast }) {
                 <span className="forecast-date">{day.date}</span>
                 <span className="forecast-desc">{day.description}</span>
                 <span className="forecast-temp">
-                  {Math.round(day.tempMin)}° / {Math.round(day.tempMax)}°
+                  {Math.round(day.tempMin)}&deg; / {Math.round(day.tempMax)}&deg;
                 </span>
               </div>
             ))}

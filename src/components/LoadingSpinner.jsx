@@ -1,5 +1,3 @@
-import React from 'react';
-
 /**
  * LoadingSpinner Component
  * Shows a loading indicator while data is being fetched

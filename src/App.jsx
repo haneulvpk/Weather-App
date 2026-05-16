@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SearchBar from './components/SearchBar';
 import WeatherCard from './components/WeatherCard';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -23,18 +23,14 @@ function App() {
   const [forecast, setForecast] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searchHistory, setSearchHistory] = useState([]);
-
-  useEffect(() => {
+  const [searchHistory, setSearchHistory] = useState(() => {
     try {
       const saved = localStorage.getItem(SEARCH_HISTORY_KEY);
-      if (saved) {
-        setSearchHistory(JSON.parse(saved));
-      }
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      setSearchHistory([]);
+      return [];
     }
-  }, []);
+  });
 
   const persistHistory = (cityName) => {
     const normalized = cityName.trim();
