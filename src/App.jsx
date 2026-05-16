@@ -1,142 +1,95 @@
-import { useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import SearchBar from './components/SearchBar';
 import WeatherCard from './components/WeatherCard';
-import LoadingSpinner from './components/LoadingSpinner';
-import ErrorMessage from './components/ErrorMessage';
-import {
-  getFiveDayForecastByCity,
-  getFiveDayForecastByCoords,
-  getWeatherByCity,
-  getWeatherByCoords,
-} from './services/weatherApi';
-import { mockCities } from './data/mockWeather';
-import './App.css';
+import StatCard from './components/StatCard';
+import ForecastList from './components/ForecastList';
+import AdviceCard from './components/AdviceCard';
+import RainAlert from './components/RainAlert';
+import OutfitSuggestion from './components/OutfitSuggestion';
+import TouchGrassScore from './components/TouchGrassScore';
+import { getWeatherByCity } from './services/weatherApi';
+import { mockWeather } from './data/mockWeather';
+import { getWeatherMood } from './utils/weatherMood';
+import { getRainAlert } from './utils/rainAlert';
+import { getOutfitSuggestion } from './utils/outfitSuggestion';
+import { getTouchGrassScore } from './utils/touchGrassScore';
+import { getBackgroundTheme } from './utils/backgroundTheme';
 
-const SEARCH_HISTORY_KEY = 'weather.searchHistory';
-
-/**
- * Main App Component
- * Manages weather app state and user interactions
- */
 function App() {
-  const [weather, setWeather] = useState(null);
-  const [forecast, setForecast] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [searchHistory, setSearchHistory] = useState(() => {
-    try {
-      const saved = localStorage.getItem(SEARCH_HISTORY_KEY);
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [searchValue, setSearchValue] = useState('Hanoi');
+  const [weather, setWeather] = useState(mockWeather);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const persistHistory = (cityName) => {
-    const normalized = cityName.trim();
-    if (!normalized) return;
-
-    setSearchHistory((prev) => {
-      const next = [
-        normalized,
-        ...prev.filter((item) => item.toLowerCase() !== normalized.toLowerCase()),
-      ].slice(0, 5);
-      localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(next));
-      return next;
-    });
-  };
-
-  /**
-   * Handle search form submission
-   * Fetches weather data for the entered city
-   */
-  const handleSearch = async (city) => {
+  const loadWeather = useCallback(async (city) => {
     setIsLoading(true);
-    setError(null);
+    setError('');
 
     try {
-      const [current, fiveDayForecast] = await Promise.all([
-        getWeatherByCity(city),
-        getFiveDayForecastByCity(city),
-      ]);
-      setWeather(current);
-      setForecast(fiveDayForecast);
-      persistHistory(current.city);
+      const data = await getWeatherByCity(city);
+      setWeather(data);
     } catch (err) {
-      setError(err.message || 'An error occurred while fetching weather data');
-      setWeather(null);
-      setForecast([]);
+      setError(err.message || 'Could not load weather');
     } finally {
       setIsLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadWeather('Hanoi');
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [loadWeather]);
+
+  const handleSearch = () => {
+    const nextCity = searchValue.trim();
+    if (!nextCity) return;
+    loadWeather(nextCity);
   };
 
-  const handleUseMyLocation = async () => {
-    if (!navigator.geolocation) {
-      setError('Geolocation is not supported in this browser');
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 10000,
-        });
-      });
-
-      const { latitude, longitude } = position.coords;
-      const [current, fiveDayForecast] = await Promise.all([
-        getWeatherByCoords(latitude, longitude),
-        getFiveDayForecastByCoords(latitude, longitude),
-      ]);
-      setWeather(current);
-      setForecast(fiveDayForecast);
-      persistHistory(current.city);
-    } catch (err) {
-      setError(err.message || 'Could not get your current location');
-      setWeather(null);
-      setForecast([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const weatherMood = useMemo(() => getWeatherMood(weather), [weather]);
+  const rainAlert = useMemo(() => getRainAlert(weather.hourly), [weather]);
+  const outfitSuggestion = useMemo(() => getOutfitSuggestion(weather), [weather]);
+  const touchGrass = useMemo(() => getTouchGrassScore(weather), [weather]);
+  const backgroundTheme = useMemo(() => getBackgroundTheme(weather), [weather]);
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Weather App</h1>
-        <p className="subtitle">Check weather for any city</p>
-      </header>
+    <div className={`app-bg theme-${backgroundTheme}`}>
+      <main className="app-shell">
+        <header className="app-header fade-in-card">
+          <h1>SkyMood</h1>
+          <p>Weather for humans</p>
+        </header>
 
-      <main className="app-main">
         <SearchBar
+          value={searchValue}
+          onChange={setSearchValue}
           onSearch={handleSearch}
-          onUseMyLocation={handleUseMyLocation}
-          onSelectHistory={handleSearch}
-          recentSearches={searchHistory}
-          cityOptions={mockCities}
-          isLoading={isLoading}
         />
 
-        {error && <ErrorMessage message={error} />}
+        {isLoading && <p className="status-message">Loading weather...</p>}
+        {error && <p className="status-message error">{error}</p>}
 
-        {isLoading && <LoadingSpinner />}
+        {!isLoading && (
+          <>
+            <WeatherCard weather={weather} mood={weatherMood} />
 
-        {weather && !isLoading && <WeatherCard weather={weather} forecast={forecast} />}
+            <section className="stats-grid">
+              <StatCard label="Humidity" value={`${weather.humidity}%`} />
+              <StatCard label="Wind" value={`${weather.windSpeed} km/h`} />
+              <StatCard label="Feels Like" value={`${weather.feelsLike}°`} />
+            </section>
+
+            <RainAlert message={rainAlert} />
+            <OutfitSuggestion suggestion={outfitSuggestion} />
+            <TouchGrassScore score={touchGrass.score} summary={touchGrass.summary} />
+            <ForecastList hourly={weather.hourly} />
+            <AdviceCard advice={outfitSuggestion} />
+          </>
+        )}
       </main>
-
-      <footer className="app-footer">
-        <p>
-          Weather data provided by{' '}
-          <a href="https://openweathermap.org" target="_blank" rel="noopener noreferrer">
-            OpenWeatherMap
-          </a>
-        </p>
-      </footer>
     </div>
   );
 }
